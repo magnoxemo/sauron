@@ -2,25 +2,28 @@
 #define Material_H
 
 #include <vector>
+#include <map>
 #include <string>
+#include <iostream>
 
 class Material
 {
-
 public:
-    Material(std::string name,
-             std::vector<double> &energy_range, std::vector<double>& cross_section);
+    Material(std::map<std::vector<std::string>, std::vector<double>>& cross_section,
+             std::map<std::vector<std::string>, std::vector<double>>& energy_range);
+
+    double getCrossSection(std::string& reaction_type, double& energy);
+    double getTotalCrossSection(double& energy);
 
 protected:
     std::string _name;
-    std::vector<double> _cross_section; // macroscopic
-    std::vector<double> _energy_range;
+    std::map<std::vector<std::string>, std::vector<double>> _cross_section;
+    std::map<std::vector<std::string>, std::vector<double>> _energy_range;
     unsigned int _number_of_groups;
 
-    // cross section getter
-    double getCrossSection(double& energy);
 private:
-    unsigned int getGroupIndex(double & energy);
+    unsigned int getGroupIndex(std::string& reaction_type, double& energy);
 };
 
 #endif
+

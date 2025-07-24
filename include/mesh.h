@@ -19,25 +19,23 @@ namespace libMesh {
     class System;
 } ///forward declaration of libMesh classes
 
-namespace Bijron {
 
-    class Mesh {
-        Mesh(char **argv);
+class Mesh {
+    Mesh(char **argv);
 
-        ///creates a mesh with triangular element
-        void createMesh();
+    ///creates a mesh with triangular element
+    void createMesh();
 
-        /// create an equation system
-        void initiateEquationSystem();
+    /// create an equation system
+    void initiateEquationSystem();
 
-        void writeOutputData(std::string output_file_name);
+    void writeOutputData(std::string output_file_name);
 
-        libMesh::MeshBase &_mesh;
-        libMesh::EquationSystems &_equation_system;
-        libMesh::System &_system;
-        libMesh::DofMap &_dof_map;
+    libMesh::MeshBase &_mesh;
+    libMesh::EquationSystems &_equation_system;
+    libMesh::System &_system;
+    libMesh::DofMap &_dof_map;
 
-    };
+};
 
-}
 #endif

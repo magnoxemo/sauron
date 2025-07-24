@@ -1,7 +1,7 @@
 
 #ifndef LIBMESH_TRACK_LENGTH_SOLVER_H
 #define LIBMESH_TRACK_LENGTH_SOLVER_H
-#define TOLERANCE 0.000001
+#define EPSILON 0.000001
 
 class Point;
 class Ray;

@@ -1,26 +1,51 @@
-#ifndef LIBMESH_TRACK_LENGTH_RAY_H
-#define LIBMESH_TRACK_LENGTH_RAY_H
+#ifndef SAURON_RAY_H
+#define SAURON_RAY_H
 
-#include "Vector.h"
+namespace sauron {
 
-class Ray : public Vector3D {
+struct Point; //forward declaration
+
+/* This class implements a standard ray class. I am gonna presume that a ray has
+ * a starting point and an ending point and a direction. We should be able to
+ * move a ray in a forward direction --> moving the end point in the direction
+ */
+
+class Ray {
+
 public:
-    Ray(Point &origin, Vector3D &direction);
+  // creates a ray that originates at the origin and ends at the end point
+  Ray(Point &ending_point);
+  /// creates a ray that originates at the a point and calculates the end
+  /// point from direction and distance
+  Ray(Point &starting_point, Point &direction, double &distance);
+  /// creates a ray from a starting point and ending point
+  Ray(Point &starting_point, Point &ending_point);
 
-    void moveRayToNewDirection(double t);
+  void setNorm();
 
-    void moveRayToNewDirection(double t, Vector3D &direction);
+  double calculateNorm() const;
 
-    Point getCurrentPoint() { return _current_point; }
+  Point getDirection() const;
 
-    Point getPointAlongPath(double t);
+  void normalizeDirection();
 
+  bool isDirectionNormalized();
 
-    Point _origin;
-    Point _current_point;
-    Vector3D _direction;
+  void setDirection(Point &new_direction);
 
+  void moveStartingPoint(Point &new_starting_point);
 
+  void moveEndingPoint(Point &new_ending_point);
+
+  // operator overloading section
+
+  static Point _starting_point;
+  static Point _ending_point;
+  static Point _direction;
+  double _norm;
+
+  constexpr double TOLERANCE = 1e-10;
 };
+} // namespace sauron
 
 #endif

@@ -24,8 +24,14 @@ jobs:
             COMPILER_VERSION=$(g++ --version | head -n1)
             echo "$COMPILER_VERSION is installed"
           fi
-          #install g test
-          sudo apt-get install libgtest0 libgtest-dev
+
+      - name: Install Google Test
+        run: |
+          sudo apt-get install -y cmake libgtest-dev
+          cd /usr/src/gtest
+          sudo cmake .
+          sudo make
+          sudo cp lib/*.a /usr/lib
 
       - name: Checkout code
         uses: actions/checkout@v3

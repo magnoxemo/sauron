@@ -48,5 +48,4 @@ jobs:
       - name: Run Tests
         shell: bash
         run: |
-          cd build/test
-          ./mytest
+           ./build/test/mytest

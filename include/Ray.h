@@ -24,15 +24,15 @@ public:
 
   void setNorm();
 
-  double calculateNorm(Point & point) const;
+  double calculateNorm(Point & point) ;
 
-  Point getDirection() const;
+  Point getDirection() { return _direction; }
 
   void normalizeDirection();
 
   bool isDirectionNormalized();
 
-  void setDirection(Point &new_direction);
+  void setNewDirection(Point &new_direction);
 
   void moveStartingPoint(Point &new_starting_point);
 
@@ -42,9 +42,9 @@ public:
 
   // operator overloading section
 
-  static Point _starting_point;
-  static Point _ending_point;
-  static Point _direction;
+  Point _starting_point;
+  Point _ending_point;
+  Point _direction;
   double _norm;
 
   static constexpr double TOLERANCE = 1e-10;

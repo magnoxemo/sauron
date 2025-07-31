@@ -9,16 +9,16 @@ namespace sauron{
         double x, y, z;
 
         // Overloading the addition operator (+)
-        Point operator+(const Point &other) const {
+        Point operator+( Point &other) const {
             return {x + other.x, y + other.y, z + other.z};
         }
         // Overloading the addition operator (+)
-        Point operator+(const double t) const {
+        Point operator+( double t) const {
             return {x +t, y +t, z +t};
         }
 
         // Overloading the addition operator (+)
-        Point operator-(const Point &other) const {
+        Point operator-( Point &other) const {
             return {x - other.x, y - other.y, z - other.z};
         }
 
@@ -30,17 +30,24 @@ namespace sauron{
         Point operator*(const Point &other) const {
             return {x * other.x, y * other.y, z * other.z};
         }
+
+        Point operator*( double t) const {
+            return {x * t, y * t, z * t};
+        }
+
         // Overloading the addition operator (+)
-        Point operator/(const Point &other) const {
+        Point operator/( Point &other) const {
             return {x / other.x, y / other.y, z / other.z};
         }
-        Point operator/(const double t) const {
+
+        Point operator/( double t) const {
             return {x / t, y / t, z / t};
         }
         // Overloading the equality operator (==)
-        bool operator==(const Point &other) const {
-            return (x == other.x && y == other.y);
+        bool operator==( Point &other) const {
+            return (x == other.x && y == other.y && z == other.z );
         }
+
     };
 }
 

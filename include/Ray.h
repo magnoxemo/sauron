@@ -17,13 +17,14 @@ public:
   Ray(Point &ending_point);
   /// creates a ray that originates at the a point and calculates the end
   /// point from direction and distance
+  ///the direction needs to be normalized
   Ray(Point &starting_point, Point &direction, double &distance);
   /// creates a ray from a starting point and ending point
   Ray(Point &starting_point, Point &ending_point);
 
   void setNorm();
 
-  double calculateNorm() const;
+  double calculateNorm(Point & point) const;
 
   Point getDirection() const;
 
@@ -37,6 +38,8 @@ public:
 
   void moveEndingPoint(Point &new_ending_point);
 
+  Point getPointAlongTheRay(double t);
+
   // operator overloading section
 
   static Point _starting_point;
@@ -44,7 +47,7 @@ public:
   static Point _direction;
   double _norm;
 
-  constexpr double TOLERANCE = 1e-10;
+  static constexpr double TOLERANCE = 1e-10;
 };
 } // namespace sauron
 

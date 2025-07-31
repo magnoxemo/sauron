@@ -1,0 +1,44 @@
+name: nazgul
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: check dependencies
+        shell: bash
+        run: |
+          if ! command -v g++ &> /dev/null
+          then
+            echo "g++ not found. Installing..."
+            sudo apt-get update
+            sudo apt-get install -y g++
+          else
+            COMPILER_VERSION=$(g++ --version | head -n1)
+            echo "$COMPILER_VERSION is installed"
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build
+        shell: bash
+        run: |
+          mkdir build
+          cd build 
+          cmake ..
+          make -j $nproc 
+      
+
+      - name: Run Tests
+        shell: bash
+        run: |
+          cd build/test
+          ./mytest

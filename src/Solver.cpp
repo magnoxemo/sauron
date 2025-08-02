@@ -5,7 +5,7 @@
 
 //this method implements the Moller Trumbore algorithm
 template <typename T>
-std::optional<Vector3D> Solver::triangleSolver(Ray &ray, std::vector<Point>& edges) const {
+std::optional<Vector3D> sauron::Solver::triangleSolver(Ray &ray, std::vector<Point>& edges) const {
 
     const auto edge1 = edges[1] - edges[0];
     const auto edge2 = edges[2] - edges[0];
@@ -37,7 +37,7 @@ std::optional<Vector3D> Solver::triangleSolver(Ray &ray, std::vector<Point>& edg
 }
 
 template <typename T>
-std::optional<Vector3D> Solver::quadSolver(Ray &ray, std::vector<Point> &edges) const {
+std::optional<Vector3D> sauron::Solver::quadSolver(Ray &ray, std::vector<Point> &edges) const {
     // no need to solve independtly
     // I will the triangleSolver twice in this case
     // first part the quad into two triangle

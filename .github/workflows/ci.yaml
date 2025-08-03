@@ -14,21 +14,9 @@ jobs:
       image: idaholab/moose-dev
 
     steps:
-      - name: check dependencies
-        shell: bash
-        run: |
-          if ! command -v g++ &> /dev/null
-          then
-            echo "g++ not found. Installing..."
-            apt-get update
-            apt-get install -y g++
-          else
-            COMPILER_VERSION=$(g++ --version | head -n1)
-            echo "$COMPILER_VERSION is installed"
-          fi
       - name: Install Google Test
         run: |
-          sudo apt-get install -y cmake libgtest-dev
+          yum install -y cmake gtest-devel
           cd /usr/src/gtest
           cmake .
           make -j $nproc

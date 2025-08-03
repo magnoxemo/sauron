@@ -7,11 +7,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
 
 #setting compiler to mpicxx as we will do parallel
 set(CMAKE_CXX_COMPILER ${mpicxx})
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
+
 find_package(Eigen3 REQUIRED)
 find_package(MPI REQUIRED)
 find_package(LibMesh REQUIRED)
+find_package(GTest REQUIRED)
 
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${LIBMESH_INCLUDE_DIRS})
@@ -28,6 +29,6 @@ endif()
 
 
 target_link_libraries(sauron ray_tracing_sources ${LIBMESH_LINK_FLAGS})
-add_executable(sauron  ${CMAKE_CURRENT_SOURCE_DIR}/src/SauronApp.C)
+add_executable(sauron_exe ${CMAKE_CURRENT_SOURCE_DIR}/src/SauronApp.C)
 
 

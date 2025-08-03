@@ -16,10 +16,8 @@ jobs:
     steps:
       - name: Install Google Test
         run: |
-          yum install -y cmake gtest-devel
-          cd /usr/src/gtest
-          cmake .
-          make -j $nproc
+          yum install -y cmake gtest-devel 
+          #no need to make it as it's pre compiled
 
       - name: Checkout code
         uses: actions/checkout@v3

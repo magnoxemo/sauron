@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.28)
 project(sauron)
 
 
@@ -28,7 +28,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 
-target_link_libraries(sauron ray_tracing_sources ${LIBMESH_LINK_FLAGS})
+file(GLOB SAURON_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.C)
+
+target_link_libraries(sauron SAURON_SOURCES ${LIBMESH_LINK_FLAGS})
 add_executable(sauron_exe ${CMAKE_CURRENT_SOURCE_DIR}/src/SauronApp.C)
 
 

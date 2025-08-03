@@ -10,6 +10,8 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    container:
+      image: idaholab/moose-dev
 
     steps:
       - name: check dependencies
@@ -18,19 +20,18 @@ jobs:
           if ! command -v g++ &> /dev/null
           then
             echo "g++ not found. Installing..."
-            sudo apt-get update
-            sudo apt-get install -y g++
+            apt-get update
+            apt-get install -y g++
           else
             COMPILER_VERSION=$(g++ --version | head -n1)
             echo "$COMPILER_VERSION is installed"
           fi
-
       - name: Install Google Test
         run: |
           sudo apt-get install -y cmake libgtest-dev
           cd /usr/src/gtest
-          sudo cmake .
-          sudo make -j $nproc
+          cmake .
+          make -j $nproc
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -38,13 +39,19 @@ jobs:
       - name: Build
         shell: bash
         run: |
+          export PATH="/opt/libmesh/bin:$PATH"
+          source /environment
           mkdir build
-          cd build 
-          cmake ..
-          make -j $nproc 
-      
+          cd build
+          EIGEN3_ROOT=/opt/libmesh/include cmake ..
+          make -j 8
+          echo "Running tests inside the container"
+
 
       - name: Run Tests
         shell: bash
         run: |
-           ./build/test/my_test
+          ./build/test/my_test
+          
+          
+

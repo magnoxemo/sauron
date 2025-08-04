@@ -29,6 +29,7 @@ namespace sauron {
 
         // wrapper for libmesh point locator function
         const libMesh::Elem *locateElementInMesh(Point &p);
+        const libMesh::Elem *locateElementInMesh(libMesh::Point &p);
 
     private:
         libMesh::MeshBase &_mesh;

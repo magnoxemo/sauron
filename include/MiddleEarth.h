@@ -21,15 +21,28 @@ namespace sauron{
     class MiddleEarth{
         MiddleEarth(UnstructedMesh& mesh);
 
-        //this function implements the parallel openmp solver
-        //algorithm:
-        //First layer of paralleism MPI: start from both end.
-        //2nd layer of paralleism: parallel solve and search
-        std::vector<int,double> parallelNazgulSolver(Point& current_point, Point& destination_point);
+        /*this function implements the parallel openmp solver algorithm
+         * First layer of paralleism MPI: start from both end.
+         * 2nd layer of paralleism: parallel solve and search
+         * input: starting point and destination point of the ray
+         * return:
+         * element_ids and their respective track length
+         */
+
+        std::vector<unsigned int,double> parallelNazgulSolver(Point& current_point, Point& destination_point, sauron::Solver& solver);
 
         //ref of the mesh for point locator
         UnstructedMesh& _mesh;
-        static libMesh::PointLocatorTree _point_locator_object;
+
+        Solver _solver;
+
+        //maybe not a good practice
+        /*three mpi process
+         * one master and two slave
+         * two slave will over look the solving process
+         * and the master will do the communication if the process is done or not */
+        constexpr unsigned int _mpi_world_size = 3;
+
     };
 }
 

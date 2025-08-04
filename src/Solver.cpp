@@ -37,7 +37,7 @@ std::optional<Vector3D> sauron::Solver::triangleSolver(Ray &ray, std::vector<Poi
 }
 
 template <typename T>
-std::optional<Vector3D> sauron::Solver::quadSolver(Ray &ray, std::vector<Point> &edges) const {
+std::optional<Vector3D> sauron::Solver::quadSolver(Ray &ray, std::vector<Point> &edges ) const {
     // no need to solve independtly
     // I will the triangleSolver twice in this case
     // first part the quad into two triangle

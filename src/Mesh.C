@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Logo.h"
 #include "Mesh.h"
 #include "Point.h"
@@ -9,6 +11,7 @@
 #include "libmesh/point.h"
 #include "libmesh/exodusII_io.h"
 #include "libmesh/point_locator_tree.h"
+#include "libmesh/elem.h"
 
 
 
@@ -44,7 +47,13 @@ sauron::UnstructuredMesh::locateElementInMesh(sauron::Point &p){
     //now that point isn't a libmesh point. So I have to convert it first
 
     const libMesh::Point point (p.x, p.y, p.z);
-    return (* _point_locator) (point);
+    return locateElementInMesh(point);
 
 }
+
+const libMesh::Elem *
+sauron::UnstructuredMesh::locateElementInMesh(libMesh::Point &p){
+    return (* _point_locator) (point);
+}
+
 

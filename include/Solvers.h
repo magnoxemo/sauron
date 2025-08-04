@@ -18,7 +18,6 @@ namespace sauron{
         Solver();
         //maybe it will be better to create a general solver class which
         //will the respective solver based the type of plane we would be solving
-        template <typename T> solver(Ray& ray, libMesh::Elem * element);
         template <typename T> triangleSolver(Ray &ray, std::vector <Point> &edges) const;
         template <typename T> quadSolver(Ray &ray, std::vector <Point> &edges) const ;
 

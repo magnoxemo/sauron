@@ -1,8 +1,10 @@
 #ifndef SAURON_POINT_H
 #define SAURON_POINT_H
 
+#include "libmesh/point.h"
 
 namespace sauron{
+
 
     // making a Point struct for my own sanity
     struct Point {
@@ -53,7 +55,15 @@ namespace sauron{
         }
 
     };
+
+    Point convertLibMeshPointToSauronPoint(libMesh::Point& point){
+        sauron::Point p = {point(0), point(1), point(2)};
+        return p;
+    }
 }
+
+
+
 
 
 #endif

@@ -1,43 +1,40 @@
+#ifndef SAURON_UNSTRUCTURED_MESH_H
+#define SAURON_UNSTRUCTURED_MESH_H
+
+#include <memory>
 #include <string>
-#include <iostream>
-#include <stdexcept>
 
-
-namespace libMesh{
+namespace libMesh {
     class ExodusII_IO;
     class MeshBase;
     class Elem;
-}//forward declaration
+    class LibMeshInit;
+    class PointLocatorTree;
+    class Point;
+} // namespace libMesh
 
-
-namespace sauron{
-
+namespace sauron {
     struct Point;
 
+    class UnstructuredMesh {
+    public:
+        // should allow both the case. either read the mesh or get a ref to the mesh
+        // from else where
+        UnstructuredMesh(std::string &mesh_file_name, libMesh::LibMeshInit &init);
+        UnstructuredMesh(libMesh::MeshBase &mesh);
 
+    protected:
+        // method for reading the mesh
+        libMesh::MeshBase &readMesh(std::string &mesh_file_name);
 
-    class UnstructedMesh{
-        UnstructedMesh(std::string& mesh_file_name , libMesh::LibMeshInit& init):
-            _meshinit(.comm()),
-            _exodus_io(_mesh)
+        // wrapper for libmesh point locator function
+        const libMesh::Elem *locateElementInMesh(Point &p);
 
-        {
-            //try to read the mesh first
-            try{
-                _exodus_io.read(mesh_file_name);
-                _mesh.print_info();
-            }catch (const std::exception& error)
-                std::cerr<< "Error reading the "<<mesh_file_name<<" \n"<< error.what()<<std::endl;
-
-
-        }
-
-        //wrapper for libmesh point locator function
-        libMesh::Elem* locateElementInMesh(Point& p);
-
-        //should I make it a static ref? There is no need to copy it since mc would have it anyway.
-        libMesh::MeshBase& _mesh;
-        libMesh::ExodusII_IO& _exodus_io;
-
+    private:
+        libMesh::MeshBase &_mesh;
+        std::unique_ptr<libMesh::PointLocatorTree> _point_locator;
     };
+
 }
+
+#endif

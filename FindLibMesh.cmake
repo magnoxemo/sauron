@@ -3,8 +3,7 @@ find_program(LIBMESH_CONFIG NAMES libmesh-config PATHS ENV PATH)
 if (LIBMESH_CONFIG)
     execute_process(COMMAND ${LIBMESH_CONFIG} --include
             OUTPUT_VARIABLE LIBMESH_INCLUDE_DIRS
-            OUTPUT_STRIP_TRAILING_WHITESPACE) #returning multiple paths I need to find out a way to
-    #reconstruct it
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
 
     execute_process(COMMAND ${LIBMESH_CONFIG} --libs
             OUTPUT_VARIABLE LIBMESH_LINK_FLAGS

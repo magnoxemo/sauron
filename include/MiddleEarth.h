@@ -30,11 +30,14 @@ namespace sauron{
          */
 
         std::vector<unsigned int,double> parallelNazgulSolver(Point& current_point, Point& destination_point, sauron::Solver& solver);
+    private:
+        template<typename T>
+        solveOneElement(sauron::Ray& ray, libMesh::Elem* element)
 
         //ref of the mesh for point locator
         UnstructedMesh& _mesh;
 
-        Solver _solver;
+        Solver& _solver;
 
         //maybe not a good practice
         /*three mpi process

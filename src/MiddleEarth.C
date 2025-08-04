@@ -37,6 +37,7 @@ sauron::MiddleEarth::parallelNazgulSolver(Point& current_point, Point& destinati
 
 }
 
+template<typename T>
 sauron::MiddleEarth::solveOneElement(sauron::Ray& ray, libMesh::Elem* element){
 
     for (const auto side_id: element->n_sides()) {
@@ -49,15 +50,20 @@ sauron::MiddleEarth::solveOneElement(sauron::Ray& ray, libMesh::Elem* element){
         //now check how many vertecies are there if 3 then call the triangular solver if 4 then call the quad solver
         //if else i will throw an error as I am lazy and haven't implemented solver for other elements
         //TO DO : this is where I am gonna implement the openmp parallerlism
-        if (vectecies_on_this_side.size() == 3 )
+        if (vectecies_on_this_side.size() == 3 ){
             //three point means triangle
             auto solution = solver.triangleSolver(ray, vectecies_on_this_side );
-        else if (vectecies_on_this_side.size() == 4)
+            return solution;
+        }
+        else if (vectecies_on_this_side.size() == 4){
             auto solution = solver.quadSolver(ray, vectecies_on_this_side );
+            return solution;
+        }
         else{
             std::cerr<<"For "<< starting_element->type()<< "type "<<" I don't have a solver. It needs to be either Triangular or Quad \n";
             return ;
         }
+
 
     }
 }

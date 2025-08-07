@@ -1,17 +1,21 @@
 #include "Solver.h"
 #include "Ray.h"
+#include "Point.h"
 #include <optional>  // For optional return type
 
 
 //this method implements the Moller Trumbore algorithm
-template <typename T>
-std::optional<Vector3D> sauron::Solver::triangleSolver(Ray &ray, std::vector<Point>& edges) const {
+//but it only solves for the distance as once I know the distance I can just
+// get the co-ordinate of the interception by ray._origin + t* ray._direction
+
+std::optional<double>
+sauron::Solver::triangleSolver(Ray &ray, std::vector<Point>& edges) const {
 
     const auto edge1 = edges[1] - edges[0];
     const auto edge2 = edges[2] - edges[0];
 
-    const auto P = ray._direction.crossProduct(edge2);
-    const double det = P.dotProduct(edge1);
+    const auto ray_cross_eage_2 = sauron::cross_product(ray._direction,edge_2);
+    const double det = sauron::dot_product(edge_1, ray_cross_eage_2);
 
     if (std::fabs(det) < EPSILON)
         return std::nullopt;
@@ -19,30 +23,30 @@ std::optional<Vector3D> sauron::Solver::triangleSolver(Ray &ray, std::vector<Poi
     const double invDet = 1.0 / det;
     const auto T = ray._origin - edges[0];
 
-    const double u = T.dotProduct(P) * invDet;
-    if (u < 0.0 || u > 1.0)
+    const double u = dot_product( T, ray_cross_eage_2) * invDet;
+    if ((u < 0 && std::fabs(u) > EPSILON) || (u > 1 && std::fabs(u)(u-1) > EPSILON))
         return std::nullopt;
 
-    const auto Q = T.crossProduct(edge1);
-    const double v = ray._direction.dotProduct(Q) * invDet;
-    if (v < 0.0 || (u + v) > 1.0)
-        return std::nullptr;
+    const auto T_cross_eage_1 = cross_product(t, edge1);
+    const double v = sauron::dot_product(ray._direction, T_cross_eage_1) * invDet;
 
-    const double t = edge2.dotProduct(Q) * invDet;
-    if (t > EPSILON) {
-        return Vector3D(t, u, v);
-    }
+    if ((v < 0 && std::fabs(v) > EPSILON) || (u + v > 1 && std::fabs(u + v - 1) > EPSILON))
+        return std::nullopt;
 
+
+    double t = sauron::dot_product(edge2, T_cross_eage_1 ) * invDet;
+    if (t > EPSILON)
+        return t;
     return std::nullopt;
 }
 
-template <typename T>
-std::optional<Vector3D> sauron::Solver::quadSolver(Ray &ray, std::vector<Point> &edges ) const {
+std::optional<double>
+sauron::Solver::quadSolver(Ray &ray, std::vector<Point> &edges ) const {
     // no need to solve independtly
     // I will the triangleSolver twice in this case
     // first part the quad into two triangle
     std::vector<Point> triangle1{edges[0], edges[1], edges[2]};
-    auto solution1 = triangleSolver<T>(ray, triangle1);
+    auto solution1 = triangleSolver(ray, triangle1);
 
     if (solution1.has_value())
         return solution1;

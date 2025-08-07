@@ -33,8 +33,6 @@ sauron::MiddleEarth::parallelNazgulSolver(Point& current_point, Point& destinati
     solveOneElement(forward_ray, starting_element);
     solveOneElement(backward_ray, starting_element);
 
-
-
 }
 
 template<typename T>
@@ -60,7 +58,7 @@ sauron::MiddleEarth::solveOneElement(sauron::Ray& ray, libMesh::Elem* element){
             return solution;
         }
         else{
-            std::cerr<<"For "<< starting_element->type()<< "type "<<" I don't have a solver. It needs to be either Triangular or Quad \n";
+            std::cerr<<"For "<< element->type()<< "type "<<" I don't have a solver. It needs to be either Triangular or Quad \n";
             return ;
         }
 

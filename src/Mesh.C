@@ -42,7 +42,7 @@ sauron::UnstructuredMesh::readMesh(std::string& mesh_name){
     return _mesh;
 }
 
-const libMesh::Elem *
+libMesh::Elem *
 sauron::UnstructuredMesh::locateElementInMesh(sauron::Point &p){
     //now that point isn't a libmesh point. So I have to convert it first
 
@@ -51,7 +51,7 @@ sauron::UnstructuredMesh::locateElementInMesh(sauron::Point &p){
 
 }
 
-const libMesh::Elem *
+libMesh::Elem *
 sauron::UnstructuredMesh::locateElementInMesh(libMesh::Point &p){
     return (* _point_locator) (point);
 }

@@ -31,6 +31,9 @@ namespace sauron{
 
         std::vector<unsigned int,double> parallelNazgulSolver(Point& current_point, Point& destination_point, sauron::Solver& solver);
     private:
+        //
+        void get_nodes_on_a_side(libMesh::Elem* element, unsigned int side_id, std::vector<Point>& vectecies_on_this_side );
+
         template<typename T>
         solveOneElement(sauron::Ray& ray, libMesh::Elem* element)
 

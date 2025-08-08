@@ -1,6 +1,7 @@
 #include <cmath>
 #include <omp.h>
 #include <iostream>
+#include <atomic>
 
 
 #include "libmesh/libmesh.h"
@@ -11,7 +12,7 @@
 #include "Ray.h"
 #include "MiddleEarth.h"
 #include "Mesh.h"
-#include "Solvers.h"
+#include "Solver.h"
 
 
 void

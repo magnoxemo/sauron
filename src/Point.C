@@ -1,5 +1,4 @@
 #include "libmesh/point.h"
-
 #include "Point.h"
 
 
@@ -18,7 +17,8 @@ sauron::cross_product(const Point& point_a, const Point& point_b){
             point_a.x * point_b.y - point_a.y * point_b.x
     };
 }
-sauron::Point
+
+double
 sauron::dot_product(const Point& point_a, const Point& point_b){
-    return point_a * point_b;
+    return (point_a * point_b).sum();
 }

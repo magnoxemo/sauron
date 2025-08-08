@@ -4,7 +4,7 @@
 #include "Ray.h"
 
 sauron::Ray::Ray(Point &ending_point)
-    : _starting_point({0, 0, 0}),
+    : _starting_point{0, 0, 0},
       _ending_point(ending_point),
       _direction(_ending_point - _starting_point){
 

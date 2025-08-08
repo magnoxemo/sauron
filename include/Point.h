@@ -58,7 +58,8 @@ namespace sauron{
 
     Point convertLibMeshPointToSauronPoint(libMesh::Point& point);
     Point cross_product(const Point& point_a, const Point& point_b);
-    Point dot_product(const Point& point_a, const Point& point_b);
+    double dot_product(const Point& point_a, const Point& point_b);
+
 }
 
 

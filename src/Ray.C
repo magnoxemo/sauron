@@ -4,28 +4,25 @@
 #include "Ray.h"
 
 sauron::Ray::Ray(Point &ending_point)
-    : _starting_point{0, 0, 0},
-      _ending_point(ending_point),
-      _direction(_ending_point - _starting_point){
+    : _starting_point{0, 0, 0}, _ending_point(ending_point),
+      _direction(_ending_point - _starting_point) {
 
-    setNorm();
-    normalizeDirection();
+  setNorm();
+  normalizeDirection();
 }
 sauron::Ray::Ray(Point &starting_point, Point &direction, double &distance)
-    : _starting_point(starting_point),
-      _direction(direction){
+    : _starting_point(starting_point), _direction(direction) {
 
-    normalizeDirection();
-    _ending_point = _starting_point + (direction* distance);
-    setNorm();
+  normalizeDirection();
+  _ending_point = _starting_point + (direction * distance);
+  setNorm();
 }
 sauron::Ray::Ray(Point &starting_point, Point &ending_point)
-    : _starting_point(starting_point),
-      _ending_point(ending_point),
-      _direction(_ending_point - _starting_point){
+    : _starting_point(starting_point), _ending_point(ending_point),
+      _direction(_ending_point - _starting_point) {
 
-    setNorm();
-    normalizeDirection();
+  setNorm();
+  normalizeDirection();
 }
 
 void sauron::Ray::setNorm() {

@@ -5,7 +5,7 @@
 
 namespace sauron {
 
-//forward declaration
+// forward declaration
 
 /* This class implements a standard ray class. I am gonna presume that a ray has
  * a starting point and an ending point and a direction. We should be able to
@@ -19,16 +19,16 @@ public:
   Ray(Point &ending_point);
   /// creates a ray that originates at the a point and calculates the end
   /// point from direction and distance
-  ///the direction needs to be normalized
+  /// the direction needs to be normalized
   Ray(Point &starting_point, Point &direction, double &distance);
   /// creates a ray from a starting point and ending point
   Ray(Point &starting_point, Point &ending_point);
 
   void setNorm();
 
-  double calculateNorm(Point & point) ;
+  double calculateNorm(Point &point);
 
-  Point& getDirection() { return _direction; }
+  Point &getDirection() { return _direction; }
 
   void normalizeDirection();
 
@@ -38,16 +38,16 @@ public:
 
   void moveStartingPoint(Point &new_starting_point);
 
-    void moveEndingPoint(Point &new_ending_point);
+  void moveEndingPoint(Point &new_ending_point);
 
-    sauron::Point getPointAlongTheRay(double t);
+  sauron::Point getPointAlongTheRay(double t);
 
   // operator overloading section
 
-    Point _starting_point;
-    Point _ending_point;
-    Point _direction;
-    double _norm;
+  Point _starting_point;
+  Point _ending_point;
+  Point _direction;
+  double _norm;
 
   static constexpr double TOLERANCE = 1e-10;
 };

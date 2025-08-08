@@ -5,27 +5,29 @@
 #include <optional>
 #include <vector>
 
-namespace sauron{
+namespace sauron {
 
-    //forward declare Point and Ray
-    struct Point;
-    class Ray;
+// forward declare Point and Ray
+struct Point;
+class Ray;
 
-    /*this solver class solves for the ray intersction point
-     * and distance in an libMesh element
-    */
-    class Solver{
+/*this solver class solves for the ray intersction point
+ * and distance in an libMesh element
+ */
+class Solver {
 
-    public:
-        Solver();
-        //maybe it will be better to create a general solver class which
-        //will the respective solver based the type of plane we would be solving
-        std::optional<double> triangleSolver(sauron::Ray &ray, std::vector <sauron::Point> &edges) const;
-        std::optional<double> quadSolver(sauron::Ray &ray, std::vector <sauron::Point> &edges) const ;
+public:
+  Solver();
+  // maybe it will be better to create a general solver class which
+  // will the respective solver based the type of plane we would be solving
+  std::optional<double> triangleSolver(sauron::Ray &ray,
+                                       std::vector<sauron::Point> &edges) const;
+  std::optional<double> quadSolver(sauron::Ray &ray,
+                                   std::vector<sauron::Point> &edges) const;
 
-        static constexpr double EPSILON = 1e-10;
-    };
+  static constexpr double EPSILON = 1e-10;
+};
 
-}
+} // namespace sauron
 
 #endif

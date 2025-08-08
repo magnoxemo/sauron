@@ -22,3 +22,10 @@ double
 sauron::dot_product(const Point& point_a, const Point& point_b){
     return (point_a * point_b).sum();
 }
+
+double
+sauron::get_distance(const Point& point_a, const Point& point_b){
+
+    auto l = point_a - point_b;
+    return sqrt((l*l).sum());
+}

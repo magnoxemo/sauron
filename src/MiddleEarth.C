@@ -20,7 +20,7 @@ sauron::MiddleEarth::get_nodes_on_a_side(const libMesh::Elem* element,
                          unsigned int side_id,
                          std::vector<sauron::Point>& vectecies_on_this_side ){
 
-    #pragma omp prallel critical
+    #pragma omp prallel for
     {
         for (const auto node: element->nodes_on_side(side_id)){
             auto p = element->point(node);
@@ -53,21 +53,28 @@ sauron::MiddleEarth::parallelNazgulSolver(Point& current_point, Point& destinati
     // also check it's solving for the forward direction point
 
     bool ray_solving_state = true;
-    while (ray_solving_state){
+    //need to pick up a better thing
+    double totoal_track_length = sauron::get_distance(current_point, destination_point );
+    double dist = 0.0 ;
+    while (dist <= totoal_track_length){
 
         auto [forward_side_id, forward_ray_segment] = solveOneElement(forward_ray, starting_element).value();
         auto [reverse_side_id, reverse_ray_segment] = solveOneElement(backward_ray, destination_element).value();
 
 
         //check if they have reached to the same element or not
-        if ((starting_element->neighbor_ptr(forward_side_id)) == (destination_element->neighbor_ptr(reverse_side_id)))
-            ray_solving_state = false;
+        if (forward_ray_segment>0){
+            intercepted_element_ids.push_back(starting_element->id());
+            ray_segments.push_back(forward_ray_segment);
+            dist+=forward_ray_segment;
+        }
+        if (reverse_ray_segment>0){
+            intercepted_element_ids.push_back(destination_element->id());
+            ray_segments.push_back(reverse_ray_segment);
+            dist+=reverse_ray_segment;
+        }
 
-        //load the data
-        intercepted_element_ids.push_back(starting_element->id());
-        intercepted_element_ids.push_back(destination_element->id());
-        ray_segments.push_back(forward_ray_segment);
-        ray_segments.push_back(reverse_ray_segment);
+
 
         //get new elements
         starting_element = starting_element->neighbor_ptr(forward_side_id);

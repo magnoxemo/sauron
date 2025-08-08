@@ -1,6 +1,8 @@
 #ifndef SAURON_MIDDLE_EARTH_H
 #define SAURON_MIDDLE_EARTH_H
 
+#include <optional>
+
 namespace sauron{
 
     class Ray;
@@ -19,7 +21,7 @@ namespace sauron{
     */
 
     class MiddleEarth{
-        MiddleEarth(UnstructedMesh& mesh);
+        MiddleEarth (UnstructuredMesh& mesh);
 
         /*this function implements the parallel openmp solver algorithm
          * First layer of paralleism MPI: start from both end.
@@ -29,16 +31,23 @@ namespace sauron{
          * element_ids and their respective track length
          */
 
-        std::vector<unsigned int,double> parallelNazgulSolver(Point& current_point, Point& destination_point, sauron::Solver& solver);
+        std::pair<std::vector<unsigned int>, std::vector<double>>
+        parallelNazgulSolver(Point& current_point,
+                             Point& destination_point,
+                             sauron::Solver& solver);
     private:
         //
-        void get_nodes_on_a_side(libMesh::Elem* element, unsigned int side_id, std::vector<Point>& vectecies_on_this_side );
+        void get_nodes_on_a_side(const libMesh::Elem* element,
+                                 unsigned int side_id,
+                                 std::vector<Point>& vectecies_on_this_side );
 
-        template<typename T>
-        solveOneElement(sauron::Ray& ray, libMesh::Elem* element)
+        //solves for one element returns the side_id and ray segment
+        std::optional<std::pair<unsigned int, double>>
+        solveOneElement(sauron::Ray& ray,
+                        const libMesh::Elem* element);
 
         //ref of the mesh for point locator
-        UnstructedMesh& _mesh;
+        UnstructuredMesh& _mesh;
 
         Solver& _solver;
 
@@ -47,7 +56,7 @@ namespace sauron{
          * one master and two slave
          * two slave will over look the solving process
          * and the master will do the communication if the process is done or not */
-        constexpr unsigned int _mpi_world_size = 3;
+        constexpr static unsigned int _mpi_world_size = 3;
 
     };
 }

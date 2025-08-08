@@ -56,22 +56,9 @@ namespace sauron{
 
     };
 
-    Point convertLibMeshPointToSauronPoint(libMesh::Point& point){
-        sauron::Point p = {point(0), point(1), point(2)};
-        return p;
-    }
-
-    Point cross_product(const Point& point_a, const Point& point_b){
-
-        return {
-                point_a.y * point_b.z - point_a.z * point_b.y,
-                point_a.z * point_b.x - point_a.x * point_b.z,
-                point_a.x * point_b.y - point_a.y * point_b.x
-        };
-    }
-    Point dot_product(const Point& point_a, const Point& point_b){
-        return point_a * point_b;
-    }
+    Point convertLibMeshPointToSauronPoint(libMesh::Point& point);
+    Point cross_product(const Point& point_a, const Point& point_b);
+    Point dot_product(const Point& point_a, const Point& point_b);
 }
 
 

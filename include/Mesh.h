@@ -23,15 +23,13 @@ namespace sauron {
         UnstructuredMesh(std::string &mesh_file_name, libMesh::LibMeshInit &init);
         UnstructuredMesh(libMesh::MeshBase &mesh);
 
-    protected:
         // method for reading the mesh
         libMesh::MeshBase &readMesh(std::string &mesh_file_name);
 
         // wrapper for libmesh point locator function
-        libMesh::Elem *locateElementInMesh(Point &p)const ;
-        libMesh::Elem *locateElementInMesh(libMesh::Point &p)const;
+        const libMesh::Elem *locateElementInMesh(sauron::Point &p)const ;
+        const libMesh::Elem *locateElementInMesh(libMesh::Point &p)const;
 
-    private:
         libMesh::MeshBase &_mesh;
         std::unique_ptr<libMesh::PointLocatorTree> _point_locator;
     };

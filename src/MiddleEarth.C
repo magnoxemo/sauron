@@ -1,6 +1,5 @@
 #include <cmath>
 #include <omp.h>
-#include <mpi.h>
 #include <iostream>
 
 
@@ -10,16 +9,20 @@
 
 #include "Point.h"
 #include "Ray.h"
+#include "MiddleEarth.h"
+#include "Mesh.h"
+#include "Solvers.h"
 
 
-void get_nodes_on_a_side(libMesh::Elem* element,
+void
+sauron::MiddleEarth::get_nodes_on_a_side(const libMesh::Elem* element,
                          unsigned int side_id,
-                         std::vector<Point>& vectecies_on_this_side ){
+                         std::vector<sauron::Point>& vectecies_on_this_side ){
 
-    #pagma omp prallel
+    #pragma omp prallel critical
     {
-        for (const auto node: element->nodes_on_sides(side_id)){
-            auto p = elem->point(node);
+        for (const auto node: element->nodes_on_side(side_id)){
+            auto p = element->point(node);
             vectecies_on_this_side.push_back(sauron::convertLibMeshPointToSauronPoint(p));
         }
     };
@@ -39,8 +42,8 @@ sauron::MiddleEarth::parallelNazgulSolver(Point& current_point, Point& destinati
     auto reverse_dir = backward_ray.getDirection();
 
     //element in the current point
-    auto starting_element = locateElementInMesh(current_point);
-    auto destination_element = locateElementInMesh(destination_point);
+    auto starting_element = _mesh.locateElementInMesh(current_point);
+    auto destination_element = _mesh.locateElementInMesh(destination_point);
 
     /*TO DO:
      * check if the element is valid */
@@ -51,13 +54,13 @@ sauron::MiddleEarth::parallelNazgulSolver(Point& current_point, Point& destinati
     bool ray_solving_state = true;
     while (ray_solving_state){
 
-        auto forward_side_id, forward_ray_segment = solveOneElement(forward_ray, starting_element);
-        auto reverse_side_id, reverse_ray_segment = solveOneElement(backward_ray, destination_element);
+        auto [forward_side_id, forward_ray_segment] = solveOneElement(forward_ray, starting_element).value();
+        auto [reverse_side_id, reverse_ray_segment] = solveOneElement(backward_ray, destination_element).value();
 
 
         //check if they have reached to the same element or not
-        if ((starting_element->neighbor_side_ptr(forward_side_id)) == (destination_element->neighbor_side_ptr(reverse_side_id)))
-            return std::make_pair(intercepted_element_ids, ray_segments );
+        if ((starting_element->neighbor_ptr(forward_side_id)) == (destination_element->neighbor_ptr(reverse_side_id)))
+            ray_solving_state = false;
 
         //load the data
         intercepted_element_ids.push_back(starting_element->id());
@@ -66,69 +69,59 @@ sauron::MiddleEarth::parallelNazgulSolver(Point& current_point, Point& destinati
         ray_segments.push_back(reverse_ray_segment);
 
         //get new elements
-        auto starting_element = starting_element->neighbor_side_ptr(forward_side_id);
-        auto destination_element = destination_element->neighbor_side_ptr(reverse_side_id);
+        starting_element = starting_element->neighbor_ptr(forward_side_id);
+        destination_element = destination_element->neighbor_ptr(reverse_side_id);
 
         //update_ray
-        forward_ray._starting_point = forward_ray._starting_point + forward_ray_segment* forward_ray._direction;
-        backward_ray._starting_point = backward_ray._starting_point + backward_ray* backward_ray._direction;
+        forward_ray._starting_point = forward_ray._starting_point +  forward_ray._direction *forward_ray_segment;
+        backward_ray._starting_point = backward_ray._starting_point +  backward_ray._direction * reverse_ray_segment;
 
     }
-
-
+    return std::make_pair(intercepted_element_ids, ray_segments );
 }
 
 
 
 //solves for one element
 //returns the side_id and ray segment
-std::pair<unsigned int, double>
-sauron::MiddleEarth::solveOneElement(sauron::Ray& ray, libMesh::Elem* element){
+std::optional<std::pair<unsigned int, double>>
+sauron::MiddleEarth::solveOneElement(sauron::Ray& ray, const libMesh::Elem* element){
 
-     int side_id_of_the_intercepted_side;
-     double track_length;
-     std::atomic<bool> is_solution_found(false);
+    std::atomic<bool> is_solution_found(false);
+    std::pair<unsigned int, double> result;
 
-    #pagma omp parallel for shared (is_solution_found, side_id_of_the_intercepted_side, track_length)
+#pragma omp parallel for shared(is_solution_found)
+    for (unsigned int side_id = 0; side_id < element->n_sides(); ++side_id) {
 
-    for (const auto side_id: element->n_sides()) {
-
-        if (is_solution_found.found())
+        if (is_solution_found.load())
             continue;
 
-        std::vector<sauron::Point> vectecies_on_this_side;
-        get_nodes_on_a_side(element, side_id, vectecies_on_this_side);
+        std::vector<sauron::Point> vertices_on_this_side;
+        get_nodes_on_a_side(element, side_id, vertices_on_this_side);
 
-        //now check how many vertecies are there if 3 then call the triangular solver if 4 then call the quad solver
-        //if else i will throw an error as I am lazy and haven't implemented solver for other elements
-        //TO DO : this is where I am gonna implement the openmp parallerlism
+        std::optional<double> t;
+        if (vertices_on_this_side.size() == 3)
+            t = _solver.triangleSolver(ray, vertices_on_this_side);
+        else if (vertices_on_this_side.size() == 4)
+            t = _solver.quadSolver(ray, vertices_on_this_side);
+        else {
+            std::cerr << "Unsupported element with " << vertices_on_this_side.size() << " vertices.\n";
+            continue;
+        }
 
-            if (vectecies_on_this_side.size() == 3 )
-                //three point means triangle
-                auto t = solver.triangleSolver(ray, vectecies_on_this_side );
-            else if (vectecies_on_this_side.size() == 4)
-                auto t = solver.quadSolver(ray, vectecies_on_this_side );
-            else{
-                std::cerr<<"For "<< element->type()<< "type "<<" I don't have a solver. It needs to be either Triangular or Quad \n";
-            }
-            #pragma omp parallel critical
+        if (t.has_value()) {
+#pragma omp critical
             {
-                if (!is_solution_found.found()){
-                    if (t.has_value()){
-                        track_length = t;
-                        side_id_of_the_intercepted_side = side_id;
-                        is_solution_found.store(true);
-                    }
+                if (!is_solution_found.load()) {
+                    result = std::make_pair(side_id, t.value());
+                    is_solution_found.store(true);
                 }
-
-            };
-        #pragma omp cancellation point for
-
+            }
+        }
     }
 
-    if (is_solution_found.found())
-        return std::make_pair(side_id_of_the_intercepted_side,track_length);
-    else
-        return;
+    if (is_solution_found.load())
+        return result;
 
+    return std::nullopt;
 }

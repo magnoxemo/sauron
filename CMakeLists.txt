@@ -8,12 +8,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
 find_package(Eigen3 REQUIRED)
 find_package(MPI REQUIRED)
 find_package(LibMesh REQUIRED)
+find_package(OpenMP REQUIRED)
 find_package(GTest REQUIRED)
 
 include_directories(
         ${EIGEN3_INCLUDE_DIR}
         ${LIBMESH_INCLUDE_DIRS}
-        ${MPI_INCLUDE_PATH}
+        ${MPI_CXX_INCLUDE_PATH}
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 

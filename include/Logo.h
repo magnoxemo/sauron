@@ -6,7 +6,7 @@
 void printLogo() {
     std::cout <<
               R"(
-I am running or I am running tests
+I am ROBBIE. I am running tests for sauron
           .__....._             _.....__,
             .": o :':         ;': o :".
             `. `-' .'.       .'. `-' .'

@@ -10,7 +10,12 @@ target_include_directories(sauron
         ${MPI_INCLUDE_PATH}
 )
 
-target_link_libraries(sauron PRIVATE OpenMP::OpenMP_CXX ${LIBMESH_LIBRARIES} ${MPI_CXX_LIBRARIES})
+target_link_libraries(sauron
+        PUBLIC
+        ${LIBMESH_LIBRARIES}
+        MPI::MPI_CXX
+        OpenMP::OpenMP_CXX
+)
 
 # Separate executable target
 add_executable(sauron_exe SauronApp.C)

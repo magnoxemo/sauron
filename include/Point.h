@@ -44,7 +44,7 @@ struct Point {
   double sum() const { return x + y + z; }
 };
 
-Point convertLibMeshPointToSauronPoint(libMesh::Point &point);
+Point convertLibMeshPointToSauronPoint(const libMesh::Point &point);
 Point cross_product(const Point &point_a, const Point &point_b);
 double dot_product(const Point &point_a, const Point &point_b);
 double get_distance(const Point &point_a, const Point &point_b);

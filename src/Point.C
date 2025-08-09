@@ -1,12 +1,14 @@
 #include "Point.h"
 #include "libmesh/point.h"
 
-sauron::Point sauron::convertLibMeshPointToSauronPoint(libMesh::Point &point) {
-  sauron::Point p = {point(0), point(1), point(2)};
+sauron::Point
+sauron::convertLibMeshPointToSauronPoint(const libMesh::Point &point)  {
+  sauron::Point p {point(0), point(1), point(2)};
   return p;
 }
 
-sauron::Point sauron::cross_product(const Point &point_a,
+sauron::Point
+sauron::cross_product(const Point &point_a,
                                     const Point &point_b) {
 
   return {point_a.y * point_b.z - point_a.z * point_b.y,

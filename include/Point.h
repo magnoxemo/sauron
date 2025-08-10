@@ -8,6 +8,7 @@ namespace sauron {
 // making a Point struct for my own sanity
 struct Point {
   double x, y, z;
+  constexpr static double tolerance = 10e-5;
 
   // Overloading the addition operator (+)
   Point operator+(const Point &other) const {
@@ -38,7 +39,10 @@ struct Point {
   Point operator/(double t) const { return {x / t, y / t, z / t}; }
   // Overloading the equality operator (==)
   bool operator==(const Point &other) const {
-    return (x == other.x && y == other.y && z == other.z);
+    Point p = {x - other.x , y - other.y , z - other.z};
+    if ((p*p).sum()< tolerance )
+        return true;
+    return false;
   }
 
   double sum() const { return x + y + z; }

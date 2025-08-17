@@ -1,4 +1,4 @@
-file(GLOB TEST_SOURCES *.C)
+file(GLOB TEST_SOURCES *.cpp *.C)
 
 #adding test executables for every case
 foreach(TEST_SOURCE ${TEST_SOURCES})

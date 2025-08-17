@@ -21,6 +21,8 @@ sauron::UnstructuredMesh::UnstructuredMesh(libMesh::MeshBase &mesh)
     : _mesh(mesh),
       _point_locator(std::make_unique<libMesh::PointLocatorTree>(_mesh)) {}
 
+sauron::UnstructuredMesh::~UnstructuredMesh() = default;
+
 libMesh::MeshBase &sauron::UnstructuredMesh::readMesh(std::string &mesh_name) {
   // try to read the mesh first
   try {

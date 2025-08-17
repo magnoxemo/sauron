@@ -1,5 +1,5 @@
 cd build/test
-for file in Test*; do
+for file in test*; do
     if [[ -x "$file" && ! -d "$file" ]]; then
         echo "Running $file-------"
         ./$file

@@ -1,4 +1,4 @@
-file(GLOB SAURON_SOURCES *.C)
+file(GLOB SAURON_SOURCES *.cpp *.C)
 
 add_library(sauron_lib SHARED ${SAURON_SOURCES})
 

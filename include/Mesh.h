@@ -22,6 +22,7 @@ public:
   // from else where
   UnstructuredMesh(std::string &mesh_file_name, libMesh::LibMeshInit &init);
   UnstructuredMesh(libMesh::MeshBase &mesh);
+  ~UnstructuredMesh();
 
   // method for reading the mesh
   libMesh::MeshBase &readMesh(std::string &mesh_file_name);

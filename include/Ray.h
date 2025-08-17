@@ -20,9 +20,7 @@ public:
   /// creates a ray that originates at the a point and calculates the end
   /// point from direction and distance
   /// the direction needs to be normalized
-  Ray(Point &starting_point, Point &direction, double &distance);
-  /// creates a ray from a starting point and ending point
-  Ray(Point &starting_point, Point &ending_point);
+  Ray(Point &starting_point, Point &direction);
 
   void setNorm();
 
@@ -38,14 +36,12 @@ public:
 
   void moveStartingPoint(Point &new_starting_point);
 
-  void moveEndingPoint(Point &new_ending_point);
 
   sauron::Point getPointAlongTheRay(double t);
 
   // operator overloading section
 
   Point _starting_point;
-  Point _ending_point;
   Point _direction;
   double _norm;
 

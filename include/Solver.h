@@ -17,7 +17,7 @@ class Ray;
 class Solver {
 
 public:
-  Solver();
+  Solver(){};
   // maybe it will be better to create a general solver class which
   // will the respective solver based the type of plane we would be solving
   std::optional<double> triangleSolver(sauron::Ray &ray,

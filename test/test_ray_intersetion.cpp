@@ -7,7 +7,7 @@
 
 using namespace sauron;
 
-TEST(TriangleSolverTest, RayHitsTriangle) {
+TEST(TriangleSolverTest, ray_hitting_triangle) {
     std::vector<Point> triangle = {
             {0.0, 0.0, 0.0},
             {1.0, 0.0, 0.0},
@@ -27,7 +27,7 @@ TEST(TriangleSolverTest, RayHitsTriangle) {
 }
 
 
-TEST(TriangleSolverTest, RayMissesTriangle) {
+TEST(TriangleSolverTest, ray_misses_triangle) {
     std::vector<Point> triangle = {
             {0.0, 0.0, 0.0},
             {1.0, 0.0, 0.0},

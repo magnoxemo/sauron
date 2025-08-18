@@ -27,14 +27,16 @@ void sauron::MiddleEarth::get_nodes_on_a_side(
 
 std::pair<std::vector<unsigned int>, std::vector<double>>
 sauron::MiddleEarth::parallelNazgulSolver(Point &current_point,
-                                          Point &destination_point,
-                                          sauron::Solver &solver) {
+                                          Point &destination_point) {
 
   std::vector<unsigned int> intercepted_element_ids;
   std::vector<double> ray_segments;
 
-  sauron::Ray forward_ray(current_point, destination_point);
-  sauron::Ray backward_ray(destination_point, current_point);
+  auto forward_direction = destination_point - current_point;
+  auto reverse_direction = current_point - destination_point;
+
+  sauron::Ray forward_ray(current_point, forward_direction);
+  sauron::Ray backward_ray(destination_point, reverse_direction);
 
   auto starting_element = _mesh.locateElementInMesh(current_point);
   auto destination_element = _mesh.locateElementInMesh(destination_point);
@@ -58,6 +60,8 @@ sauron::MiddleEarth::parallelNazgulSolver(Point &current_point,
   double dist = 0.0;
 
   while (dist <= total_track_length ) {
+//      std::cout<<"solving starting element id = "
+//      <<starting_element->id()<<" and destination element id = "<<destination_element->id()<<"\n";
 
     auto forward_solution = solveOneElement(forward_ray, starting_element);
     auto reverse_solution = solveOneElement(backward_ray, destination_element);
@@ -73,14 +77,23 @@ sauron::MiddleEarth::parallelNazgulSolver(Point &current_point,
       forward_ray._starting_point = forward_ray._starting_point + forward_ray._direction * forward_ray_segment;
       progress_made = true;
     }
+//    else{
+//        std::cout<<"forward_solution is not valid\n";
+//    }
 
     if (reverse_solution) {
       auto [reverse_side_id, reverse_ray_segment] = reverse_solution.value();
+      intercepted_element_ids.push_back(destination_element->id());
+      ray_segments.push_back(reverse_ray_segment);
       dist += reverse_ray_segment;
       destination_element = destination_element->neighbor_ptr(reverse_side_id);
       backward_ray._starting_point = backward_ray._starting_point + backward_ray._direction * reverse_ray_segment;
       progress_made = true;
     }
+//    else{
+//        std::cout<<"reverse_solution is not valid\n";
+//    }
+//    std::cout<<dist<<"\n";
 
     if (!progress_made || (backward_ray._starting_point == forward_ray._starting_point ))
       break; // need to come up with better way to avoid infinte loop
@@ -111,14 +124,17 @@ sauron::MiddleEarth::solveOneElement(sauron::Ray &ray,
     try {
       if (vertices_on_this_side.size() == 3) {
         t = _solver.triangleSolver(ray, vertices_on_this_side);
+//        std::cout<<"caling triangle solver\n";
       } else if (vertices_on_this_side.size() == 4) {
         t = _solver.quadSolver(ray, vertices_on_this_side);
+//        std::cout<<"caling quad solver\n";
       }
     } catch (...) {
       continue;
     }
 
     if (t.has_value()) {
+//      std::cout<<"track "<<t.value()<<"\n";
       bool expected = false;
       if (is_solution_found.compare_exchange_strong(expected, true)) {
         result = std::make_pair(side_id, t.value());

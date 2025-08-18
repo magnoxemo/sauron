@@ -2,6 +2,10 @@
 #define SAURON_MIDDLE_EARTH_H
 
 #include <optional>
+namespace libMesh{
+    class Elem;
+}
+
 
 namespace sauron {
 
@@ -21,7 +25,12 @@ class UnstructuredMesh; // maybe not the best name
  */
 
 class MiddleEarth {
-  MiddleEarth(UnstructuredMesh &mesh);
+
+public:
+  MiddleEarth(UnstructuredMesh &mesh,Solver& solver ):
+          _mesh(mesh),_solver(solver){
+
+  }
 
   /*this function implements the parallel openmp solver algorithm
    * First layer of paralleism MPI: start from both end.
@@ -32,8 +41,7 @@ class MiddleEarth {
    */
 
   std::pair<std::vector<unsigned int>, std::vector<double>>
-  parallelNazgulSolver(Point &current_point, Point &destination_point,
-                       sauron::Solver &solver);
+  parallelNazgulSolver(Point &current_point, Point &destination_point);
 
 private:
   //

@@ -17,6 +17,9 @@ void sauron::MiddleEarth::get_nodes_on_a_side(
     const libMesh::Elem *element, unsigned int side_id,
     std::vector<sauron::Point> &vertices_on_this_side) {
 
+  //TODO :
+  //libmesh stores the corner nodes first then then the other nodes. so I can just store the
+  //n corner nodes and then do triangle solve. that way sauron can support other elements as well
   // rather than push it back I need to fix the vector size at once
   for (auto node: element->nodes_on_side(side_id)){
       auto p = element->point(node);
@@ -112,7 +115,8 @@ sauron::MiddleEarth::solveOneElement(sauron::Ray &ray,
   std::pair<unsigned int, double> result;
   const unsigned int num_sides = element->n_sides();
 
-#pragma omp parallel for default(none) shared(num_sides, is_solution_found, result, ray, element) schedule(dynamic)
+  omp_set_num_threads(num_sides);
+  #pragma omp parallel for default(none) shared(num_sides, is_solution_found, result, ray, element) schedule(dynamic)
   for (unsigned int side_id = 0; side_id < num_sides; ++side_id) {
     if (is_solution_found.load())
       continue;
@@ -122,7 +126,7 @@ sauron::MiddleEarth::solveOneElement(sauron::Ray &ray,
 
     std::optional<double> t;
     try {
-      if (vertices_on_this_side.size() == 3) {
+      if (vertices_on_this_side.size() == 3)  For example for TET10{
         t = _solver.triangleSolver(ray, vertices_on_this_side);
 //        std::cout<<"caling triangle solver\n";
       } else if (vertices_on_this_side.size() == 4) {

@@ -21,7 +21,7 @@ int main(int argc, char* argv []){
     libMesh::LibMeshInit init(argc, argv);
     libMesh::Mesh mesh(init.comm());
 
-    libMesh::MeshTools::Generation::build_cube(mesh,100,100,100,0,10,0,10,0,10,libMesh::TET4);
+    libMesh::MeshTools::Generation::build_cube(mesh,10,10,10,0,100,0,100,0,100,libMesh::TET4);
     //there is a huge issue with what kinda element it can handle
     //for now HEX8 and TET4 is working ig
     //TO DO:
@@ -31,7 +31,7 @@ int main(int argc, char* argv []){
 
     //create a ray
     std::default_random_engine random_number_generator;
-    std::uniform_real_distribution <double> distribution (0,10);
+    std::uniform_real_distribution <double> distribution (0,100);
 
     Point starting_point = {distribution(random_number_generator), distribution(random_number_generator), distribution(random_number_generator)};
     Point destination =  {distribution(random_number_generator), distribution(random_number_generator), distribution(random_number_generator)};

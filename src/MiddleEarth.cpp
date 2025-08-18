@@ -126,7 +126,7 @@ sauron::MiddleEarth::solveOneElement(sauron::Ray &ray,
 
     std::optional<double> t;
     try {
-      if (vertices_on_this_side.size() == 3)  For example for TET10{
+      if (vertices_on_this_side.size() == 3) {
         t = _solver.triangleSolver(ray, vertices_on_this_side);
 //        std::cout<<"caling triangle solver\n";
       } else if (vertices_on_this_side.size() == 4) {

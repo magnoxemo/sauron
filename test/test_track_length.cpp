@@ -27,14 +27,14 @@ void track_length_calculator(int argc, char* argv []){
     libMesh::LibMeshInit init(argc, argv);
     libMesh::Mesh mesh(init.comm());
 
-    libMesh::MeshTools::Generation::build_cube(mesh,10,10,10,0,10,0,10,0,10,libMesh::HEX8);
+    libMesh::MeshTools::Generation::build_cube(mesh,5,5,5,0,10,0,10,0,10,libMesh::HEX8);
     //there is a huge issue with what kinda element it can handle
     //for now it's limited with hex only
     UnstructuredMesh unstractured_mesh(mesh);
 
     //create a ray
-    Point starting_point = {0,0,0};
-    Point destination = {1,10,2};
+    Point starting_point = {2.1,1.34,1.0};
+    Point destination = {8,3,2};
     actual_track_length = get_distance (starting_point, destination);
 
 

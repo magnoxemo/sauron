@@ -23,6 +23,9 @@ int main(int argc, char* argv []){
     libMesh::MeshTools::Generation::build_cube(mesh,10,10,10,0,10,0,10,0,10,libMesh::HEX8);
     //there is a huge issue with what kinda element it can handle
     //for now hex8 is working ig
+    //TO DO:
+    // - enable support for all 3D elements.
+    // - way to determine only the edge nodes in a side
     UnstructuredMesh unstractured_mesh(mesh);
 
     //create a ray

@@ -28,4 +28,4 @@ inline int number_of_corner_nodes_on_a_side(const libMesh::ElemType element_type
 
 
 
-#endif //SAURON_NUMSIDES_H
+#endif

@@ -12,6 +12,7 @@
 #include "Point.h"
 #include "Ray.h"
 #include "Solver.h"
+#include "NumCornerNodes.h"
 
 void sauron::MiddleEarth::get_nodes_on_a_side(
     const libMesh::Elem *element, unsigned int side_id,
@@ -22,11 +23,22 @@ void sauron::MiddleEarth::get_nodes_on_a_side(
   // just store the n corner nodes and then do triangle solve. that way sauron
   // can support other elements as well
   //  rather than push it back I need to fix the vector size at once
-  for (auto node : element->nodes_on_side(side_id)) {
-    auto p = element->point(node);
-    vertices_on_this_side.push_back(
-        sauron::convertLibMeshPointToSauronPoint(p));
+  vertices_on_this_side.clear();
+
+  auto num_corner_nodes = number_of_corner_nodes_on_a_side(element->type());
+  if (num_corner_nodes!=-1){
+    vertices_on_this_side.resize(num_corner_nodes);
+    auto nodes = element->nodes_on_side(side_id);
+    for (decltype(num_corner_nodes) node_index =0 ; node_index<num_corner_nodes; node_index++) {
+      auto p = element->point(nodes[node_index]);
+      vertices_on_this_side[node_index] = sauron::convertLibMeshPointToSauronPoint(p);
+    }
   }
+  else{
+    std::cerr<<"Unsupported element type"<<element->type();
+  }
+  vertices_on_this_side.shrink_to_fit();
+
 }
 
 std::pair<std::vector<unsigned int>, std::vector<double>>

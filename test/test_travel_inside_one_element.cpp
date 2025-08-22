@@ -21,6 +21,7 @@ using namespace sauron;
 double actual_distance;
 double total_track = 0;
 double relative_error;
+unsigned int element_intercepted;
 
 
 void test_in_voxel_track(int argc, char* argv []){
@@ -38,9 +39,7 @@ void test_in_voxel_track(int argc, char* argv []){
     Point destination =  {distribution(random_number_generator), distribution(random_number_generator), distribution(random_number_generator)} ;
     actual_distance = get_distance (starting_point, destination);
 
-
-    Solver track_length_calculator;
-    MiddleEarth gondor(unstractured_mesh, track_length_calculator);
+    MiddleEarth gondor(unstractured_mesh);
     auto [ids, values]  = gondor.parallelNazgulSolver(starting_point, destination);
 
     for (auto value:values){
@@ -48,6 +47,7 @@ void test_in_voxel_track(int argc, char* argv []){
     }
 
     relative_error = (total_track - actual_distance) * 100 / actual_distance;
+    element_intercepted = ids.size();
 
 }
 
@@ -55,6 +55,7 @@ void test_in_voxel_track(int argc, char* argv []){
 TEST(track_length_calculation, test_in_voxel_track_calculation) {
     EXPECT_NEAR(actual_distance, total_track, 1e-10);
     EXPECT_NEAR(relative_error, 0, 1e-10);
+    EXPECT_EQ(element_intercepted,1);
 }
 
 

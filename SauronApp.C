@@ -37,9 +37,7 @@ int main(int argc, char* argv []){
     Point destination =  {distribution(random_number_generator), distribution(random_number_generator), distribution(random_number_generator)} ;
     auto distance = get_distance (starting_point, destination);
 
-
-    Solver track_length_calculator;
-    MiddleEarth gondor(unstractured_mesh, track_length_calculator);
+    MiddleEarth gondor(unstractured_mesh);
     auto [ids, values]  = gondor.parallelNazgulSolver(starting_point, destination);
 
     double total_track = 0;

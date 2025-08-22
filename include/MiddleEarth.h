@@ -2,6 +2,8 @@
 #define SAURON_MIDDLE_EARTH_H
 
 #include <optional>
+#include "Solver.h"
+
 namespace libMesh{
     class Elem;
 }
@@ -11,7 +13,6 @@ namespace sauron {
 
 class Ray;
 struct Point;
-class Solver;
 class UnstructuredMesh; // maybe not the best name
 
 /*
@@ -27,8 +28,8 @@ class UnstructuredMesh; // maybe not the best name
 class MiddleEarth {
 
 public:
-  MiddleEarth(UnstructuredMesh &mesh,Solver& solver ):
-          _mesh(mesh),_solver(solver){
+  MiddleEarth(UnstructuredMesh &mesh):
+          _mesh(mesh){
 
   }
 
@@ -55,7 +56,7 @@ private:
   // ref of the mesh for point locator
   UnstructuredMesh &_mesh;
 
-  Solver &_solver;
+  Solver _solver;
 
   // maybe not a good practice
   /*three mpi process

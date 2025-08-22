@@ -41,9 +41,7 @@ void track_length_calculator(int argc, char* argv []){
     Point destination =  {distribution(random_number_generator), distribution(random_number_generator), distribution(random_number_generator)};
     actual_track_length = get_distance (starting_point, destination);
 
-
-    Solver track_length_calculator;
-    MiddleEarth gondor(unstractured_mesh, track_length_calculator);
+    MiddleEarth gondor(unstractured_mesh);
     auto [ids, values]  = gondor.parallelNazgulSolver(starting_point, destination);
 
     double total_track = 0;

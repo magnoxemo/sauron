@@ -18,26 +18,20 @@ void sauron::MiddleEarth::get_nodes_on_a_side(
     const libMesh::Elem *element, unsigned int side_id,
     std::vector<sauron::Point> &vertices_on_this_side) {
 
-  // TODO :
-  // libmesh stores the corner nodes first then then the other nodes. so I can
-  // just store the n corner nodes and then do triangle solve. that way sauron
-  // can support other elements as well
-  //  rather than push it back I need to fix the vector size at once
-  vertices_on_this_side.clear();
+    vertices_on_this_side.clear();
 
-  auto num_corner_nodes = number_of_corner_nodes_on_a_side(element->type());
-  if (num_corner_nodes!=-1){
-    vertices_on_this_side.resize(num_corner_nodes);
-    auto nodes = element->nodes_on_side(side_id);
-    for (decltype(num_corner_nodes) node_index =0 ; node_index<num_corner_nodes; node_index++) {
-      auto p = element->point(nodes[node_index]);
-      vertices_on_this_side[node_index] = sauron::convertLibMeshPointToSauronPoint(p);
-    }
-  }
-  else{
-    std::cerr<<"Unsupported element type"<<element->type();
-  }
-  vertices_on_this_side.shrink_to_fit();
+    auto num_corner_nodes = number_of_corner_nodes_on_a_side(element->type());
+
+    if (num_corner_nodes != -1) {
+        vertices_on_this_side.resize(num_corner_nodes);
+        auto nodes = element->nodes_on_side(side_id);
+        for (decltype(num_corner_nodes) node_index = 0; node_index < num_corner_nodes; node_index++) {
+            auto p = element->point(nodes[node_index]);
+            vertices_on_this_side[node_index] = sauron::convertLibMeshPointToSauronPoint(p);
+        }
+    } else
+        std::cerr << "Unsupported element type" << element->type();
+    vertices_on_this_side.shrink_to_fit();
 
 }
 
@@ -76,9 +70,6 @@ sauron::MiddleEarth::parallelNazgulSolver(Point &current_point,
   double dist = 0.0;
 
   while (dist <= total_track_length) {
-    //      std::cout<<"solving starting element id = "
-    //      <<starting_element->id()<<" and destination element id =
-    //      "<<destination_element->id()<<"\n";
 
     auto forward_solution = solveOneElement(forward_ray, starting_element);
     auto reverse_solution = solveOneElement(backward_ray, destination_element);
@@ -128,9 +119,8 @@ sauron::MiddleEarth::solveOneElement(sauron::Ray &ray,
   const unsigned int num_sides = element->n_sides();
 
   omp_set_num_threads(num_sides);
-#pragma omp parallel for default(none)                                         \
-    shared(num_sides, is_solution_found, result, ray, element)                 \
-    schedule(dynamic)
+
+  #pragma omp parallel for default(none) shared(num_sides, is_solution_found, result, ray, element) schedule(dynamic)
   for (unsigned int side_id = 0; side_id < num_sides; ++side_id) {
     if (is_solution_found.load())
       continue;
@@ -140,19 +130,17 @@ sauron::MiddleEarth::solveOneElement(sauron::Ray &ray,
 
     std::optional<double> t;
     try {
-      if (vertices_on_this_side.size() == 3) {
+      if (vertices_on_this_side.size() == 3)
         t = _solver.triangleSolver(ray, vertices_on_this_side);
-        //        std::cout<<"caling triangle solver\n";
-      } else if (vertices_on_this_side.size() == 4) {
+
+      else if (vertices_on_this_side.size() == 4)
         t = _solver.quadSolver(ray, vertices_on_this_side);
-        //        std::cout<<"caling quad solver\n";
-      }
+
     } catch (...) {
       continue;
     }
 
     if (t.has_value()) {
-      //      std::cout<<"track "<<t.value()<<"\n";
       bool expected = false;
       if (is_solution_found.compare_exchange_strong(expected, true)) {
         result = std::make_pair(side_id, t.value());

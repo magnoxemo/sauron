@@ -15,8 +15,6 @@ if (LIBMESH_CONFIG)
     if (LibMesh_FOUND)
         message("libMesh is found.\n")
     endif()
-    message("LibMesh include: ${LIBMESH_INCLUDE_DIRS}")
-    message("LibMesh lib: ${LIBMESH_LINK_FLAGS}")
 
 else()
     set(LibMesh_FOUND FALSE)

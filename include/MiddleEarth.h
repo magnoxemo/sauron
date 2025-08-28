@@ -28,7 +28,7 @@ class UnstructuredMesh; // maybe not the best name
 class MiddleEarth {
 
 public:
-  MiddleEarth(UnstructuredMesh &mesh):
+    MiddleEarth(UnstructuredMesh &mesh):
           _mesh(mesh){
 
   }
@@ -47,7 +47,7 @@ public:
 private:
   //
   void get_nodes_on_a_side(const libMesh::Elem *element, unsigned int side_id,
-                           std::vector<Point> &vectecies_on_this_side);
+                                  std::vector<Point> &vectecies_on_this_side);
 
   // solves for one element returns the side_id and ray segment
   std::optional<std::pair<unsigned int, double>>
@@ -58,11 +58,6 @@ private:
 
   Solver _solver;
 
-  // maybe not a good practice
-  /*three mpi process
-   * one master and two slave
-   * two slave will over look the solving process
-   * and the master will do the communication if the process is done or not */
   constexpr static unsigned int _mpi_world_size = 3;
 };
 } // namespace sauron

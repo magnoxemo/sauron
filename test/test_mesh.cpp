@@ -24,7 +24,7 @@ test_point_locator(int argc, char* argv []){
     libMesh::Mesh mesh(init.comm());
 
     libMesh::MeshTools::Generation::build_square(mesh,10,10,0,10,0,10);
-    UnstructuredMesh test_mesh(mesh);
+    UnstructuredMesh test_mesh( mesh );
 
     Point sauron_point = {0,0,0};
     libMesh::Point libmesh_point  (0,0,0);

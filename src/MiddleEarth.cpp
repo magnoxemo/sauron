@@ -15,8 +15,8 @@
 #include "NumCornerNodes.h"
 
 void sauron::MiddleEarth::get_nodes_on_a_side(
-    const libMesh::Elem *element, unsigned int side_id,
-    std::vector<sauron::Point> &vertices_on_this_side) {
+        const libMesh::Elem *element, unsigned int side_id,
+        std::vector<sauron::Point> &vertices_on_this_side) {
 
     vertices_on_this_side.clear();
 
@@ -32,121 +32,121 @@ void sauron::MiddleEarth::get_nodes_on_a_side(
     } else
         std::cerr << "Unsupported element type" << element->type();
     vertices_on_this_side.shrink_to_fit();
+}
 
+std::pair<sauron::Ray, sauron::Ray>
+sauron::MiddleEarth::splitRay(sauron::Point& origin,sauron::Point& destination_point){
+
+    auto forward_direction = (destination_point - origin);
+    auto backward_direction = (origin - destination_point);
+    auto forward_ray = sauron::Ray(origin, forward_direction);
+    auto backward_ray =  sauron::Ray (destination_point, backward_direction);
+
+    return std::make_pair(forward_ray, backward_ray);
+}
+
+void
+sauron::MiddleEarth::rayMadeProgress(std::optional<std::pair<unsigned int, double>>& solution,
+                                     sauron::Ray* ray,
+                                     bool* progress_flag,
+                                     double* distance_counter,
+                                     const libMesh::Elem** element,
+                                     std::vector<unsigned int>* intercepted_element_ids,
+                                     std::vector<double>* ray_segments){
+
+    if (solution){
+        auto [side_id, ray_segment] = solution.value();
+        intercepted_element_ids->push_back((*element)->id());
+        ray_segments->push_back(ray_segment);
+        *distance_counter += ray_segment;
+        *element = (*element)->neighbor_ptr(side_id);
+        ray->_starting_point = ray->_starting_point + ray->_direction * ray_segment;
+        *progress_flag = true;
+    }
 }
 
 std::pair<std::vector<unsigned int>, std::vector<double>>
 sauron::MiddleEarth::parallelNazgulSolver(Point &current_point,
                                           Point &destination_point) {
 
-  std::vector<unsigned int> intercepted_element_ids;
-  std::vector<double> ray_segments;
+    std::vector<unsigned int> intercepted_element_ids;
+    std::vector<double> ray_segments;
 
-  auto starting_element = _mesh.locateElementInMesh(current_point);
-  auto destination_element = _mesh.locateElementInMesh(destination_point);
+    auto starting_element = _mesh.locateElementInMesh(current_point);
+    auto destination_element = _mesh.locateElementInMesh(destination_point);
 
-  if (!starting_element || !destination_element) {
-    return std::make_pair(intercepted_element_ids, ray_segments);
-  }
-  // if both elements are same then no need solve those repeately
-  if (starting_element == destination_element) {
+    if (!starting_element || !destination_element) {
+        return std::make_pair(intercepted_element_ids, ray_segments);
+    }
 
-    auto [forward_side_id, forward_ray_segment] = std::make_pair(
-        starting_element->id(), get_distance(current_point, destination_point));
-    intercepted_element_ids.push_back(forward_side_id);
-    ray_segments.push_back(forward_ray_segment);
-    // should I add any check if track length == dist?
-    return std::make_pair(intercepted_element_ids, ray_segments);
-  }
+    // if both elements are same then no need solve those repeatedly
+    if (starting_element == destination_element) {
+        auto forward_side_id = starting_element->id();
+        auto forward_ray_segment = get_distance(current_point, destination_point);
+        intercepted_element_ids.push_back(forward_side_id);
+        ray_segments.push_back(forward_ray_segment);
+        // should I add any check if track length == dist?
+        return std::make_pair(intercepted_element_ids, ray_segments);
+    }
 
-  auto forward_direction = destination_point - current_point;
-  auto reverse_direction = current_point - destination_point;
+    auto rays = splitRay(current_point, destination_point);
+    auto &forward_ray = rays.first;
+    auto &backward_ray = rays.second;
 
-  sauron::Ray forward_ray(current_point, forward_direction);
-  sauron::Ray backward_ray(destination_point, reverse_direction);
-
-  double total_track_length =
-      sauron::get_distance(current_point, destination_point);
-  double dist = 0.0;
-
-  while (dist <= total_track_length) {
-
-    auto forward_solution = solveOneElement(forward_ray, starting_element);
-    auto reverse_solution = solveOneElement(backward_ray, destination_element);
+    double total_track_length = sauron::get_distance(current_point, destination_point);
+    double dist = 0.0;
 
     bool progress_made = false;
 
-    if (forward_solution) {
-      auto [forward_side_id, forward_ray_segment] = forward_solution.value();
-      intercepted_element_ids.push_back(starting_element->id());
-      ray_segments.push_back(forward_ray_segment);
-      dist += forward_ray_segment;
-      starting_element = starting_element->neighbor_ptr(forward_side_id);
-      forward_ray._starting_point =
-          forward_ray._starting_point +
-          forward_ray._direction * forward_ray_segment;
-      progress_made = true;
+    while (dist <= total_track_length) {
+        progress_made = false;
+
+        auto forward_solution = solveOneElement(forward_ray, starting_element);
+        auto reverse_solution = solveOneElement(backward_ray, destination_element);
+
+        rayMadeProgress(forward_solution, &forward_ray,  &progress_made, &dist, &starting_element, &intercepted_element_ids, &ray_segments);
+        rayMadeProgress(reverse_solution, &backward_ray, &progress_made, &dist, &destination_element, &intercepted_element_ids, &ray_segments);
+
+        if (!progress_made || (backward_ray._starting_point == forward_ray._starting_point))
+            break; // need to come up with better way to avoid infinite loop
     }
 
-
-    if (reverse_solution) {
-      auto [reverse_side_id, reverse_ray_segment] = reverse_solution.value();
-      intercepted_element_ids.push_back(destination_element->id());
-      ray_segments.push_back(reverse_ray_segment);
-      dist += reverse_ray_segment;
-      destination_element = destination_element->neighbor_ptr(reverse_side_id);
-      backward_ray._starting_point =
-          backward_ray._starting_point +
-          backward_ray._direction * reverse_ray_segment;
-      progress_made = true;
-    }
-
-
-    if (!progress_made ||
-        (backward_ray._starting_point == forward_ray._starting_point))
-      break; // need to come up with better way to avoid infinte loop
-  }
-
-  return std::make_pair(intercepted_element_ids, ray_segments);
+    return std::make_pair(intercepted_element_ids, ray_segments);
 }
 
 std::optional<std::pair<unsigned int, double>>
 sauron::MiddleEarth::solveOneElement(sauron::Ray &ray,
                                      const libMesh::Elem *element) {
 
-  std::atomic<bool> is_solution_found(false);
-  std::pair<unsigned int, double> result;
-  const unsigned int num_sides = element->n_sides();
+    std::atomic<bool> is_solution_found(false);
+    std::pair<unsigned int, double> result;
+    const unsigned int num_sides = element->n_sides();
 
-  omp_set_num_threads(num_sides);
+#pragma omp parallel for default(none) shared(num_sides, is_solution_found, result, ray, element) schedule(dynamic)
+    for (unsigned int side_id = 0; side_id < num_sides; ++side_id) {
+        if (is_solution_found.load())
+            continue;
 
-  #pragma omp parallel for default(none) shared(num_sides, is_solution_found, result, ray, element) schedule(dynamic)
-  for (unsigned int side_id = 0; side_id < num_sides; ++side_id) {
-    if (is_solution_found.load())
-      continue;
+        std::vector<sauron::Point> vertices_on_this_side;
+        get_nodes_on_a_side(element, side_id, vertices_on_this_side);
 
-    std::vector<sauron::Point> vertices_on_this_side;
-    get_nodes_on_a_side(element, side_id, vertices_on_this_side);
+        std::optional<double> t;
+        try {
+            if (vertices_on_this_side.size() == 3)
+                t = _solver.triangleSolver(ray, vertices_on_this_side);
+            else if (vertices_on_this_side.size() == 4)
+                t = _solver.quadSolver(ray, vertices_on_this_side);
+        } catch (...) {
+            continue;
+        }
 
-    std::optional<double> t;
-    try {
-      if (vertices_on_this_side.size() == 3)
-        t = _solver.triangleSolver(ray, vertices_on_this_side);
-
-      else if (vertices_on_this_side.size() == 4)
-        t = _solver.quadSolver(ray, vertices_on_this_side);
-
-    } catch (...) {
-      continue;
+        if (t.has_value()) {
+            bool expected = false;
+            if (is_solution_found.compare_exchange_strong(expected, true)) {
+                result = std::make_pair(side_id, t.value());
+            }
+        }
     }
 
-    if (t.has_value()) {
-      bool expected = false;
-      if (is_solution_found.compare_exchange_strong(expected, true)) {
-        result = std::make_pair(side_id, t.value());
-      }
-    }
-  }
-
-  return is_solution_found.load() ? std::optional(result) : std::nullopt;
+    return is_solution_found.load() ? std::optional(result) : std::nullopt;
 }

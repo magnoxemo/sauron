@@ -45,9 +45,20 @@ public:
   parallelNazgulSolver(Point &current_point, Point &destination_point);
 
 private:
-  //
   void get_nodes_on_a_side(const libMesh::Elem *element, unsigned int side_id,
                                   std::vector<Point> &vectecies_on_this_side);
+
+  // splits the into one forward direction and another in backward direction
+  std::pair<sauron::Ray, sauron::Ray> splitRay(sauron::Point& origin,sauron::Point& destination_point);
+
+  // if the ray intercepted with any forward face
+  void rayMadeProgress(std::optional<std::pair<unsigned int, double>>& solution,
+                       sauron::Ray* ray,
+                       bool* progress_flag,
+                       double* distance_counter,
+                       const libMesh::Elem** element,
+                       std::vector<unsigned int>* intercepted_element_ids,
+                       std::vector<double>* ray_segments);
 
   // solves for one element returns the side_id and ray segment
   std::optional<std::pair<unsigned int, double>>

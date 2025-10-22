@@ -23,12 +23,13 @@ using namespace sauron;
 TEST(track_length_calculation, test_in_voxel_track_calculation) {
 
     double total_track = 0;
+    const char* argv[] = {"test"};
+    libMesh::LibMeshInit init(1, const_cast<char**>(argv));
 
-    libMesh::LibMeshInit init(0, nullptr);
     libMesh::Mesh mesh(init.comm());
 
     libMesh::MeshTools::Generation::build_cube(mesh,24,18,30,0,10,0,10,0,10,libMesh::TET4);
-    UnstructuredMesh unstractured_mesh(mesh);
+    UnstructuredMesh unstructured_mesh(mesh);
 
     std::default_random_engine random_number_generator;
     std::uniform_real_distribution <double> distribution (0.01,0.02);
@@ -37,7 +38,7 @@ TEST(track_length_calculation, test_in_voxel_track_calculation) {
     
     auto actual_distance = get_distance (starting_point, destination);
 
-    MiddleEarth gondor(unstractured_mesh);
+    MiddleEarth gondor(unstructured_mesh);
     auto [ids, values]  = gondor.parallelNazgulSolver(starting_point, destination);
 
     for (auto value:values)

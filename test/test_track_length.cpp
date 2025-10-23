@@ -31,7 +31,7 @@ void track_length_calculator(int argc, char* argv []){
 
     libMesh::MeshTools::Generation::build_cube(mesh,100,100,100,0,10,0,10,0,10,libMesh::TET4);
 
-    UnstructuredMesh unstractured_mesh(mesh);
+    UnstructuredMesh unstructured_mesh(mesh);
 
     //create a ray
     std::default_random_engine random_number_generator;
@@ -41,7 +41,7 @@ void track_length_calculator(int argc, char* argv []){
     Point destination =  {distribution(random_number_generator), distribution(random_number_generator), distribution(random_number_generator)};
     actual_track_length = get_distance (starting_point, destination);
 
-    MiddleEarth gondor(unstractured_mesh);
+    MiddleEarth gondor(unstructured_mesh);
     auto [ids, values]  = gondor.parallelNazgulSolver(starting_point, destination);
 
     double total_track = 0;
